@@ -6,6 +6,7 @@ from typing import List
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+from src.components.data_transformation import DataTransformation
 from src.exception import CustomException
 from src.logger import logging
 
@@ -60,4 +61,11 @@ class DataIngestion:
                 self.ingestion_config.test_data_path,
             )
         except Exception as e:
-            raise CustomException(e, sys)
+            raise CustomException(e, sys.exc_info())
+
+if __name__ == "__main__":
+    ingestion_obj = DataIngestion()
+    train_path, test_path = ingestion_obj.initiate_data_ingesion()
+    
+    transform_obj = DataTransformation()
+    transform_obj.initiate_data_transformation(train_path, test_path)
