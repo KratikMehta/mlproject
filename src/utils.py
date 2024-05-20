@@ -1,9 +1,11 @@
 import os
 import sys
+from typing import Any
 
 import dill
 from numpy.typing import NDArray
 from sklearn.metrics import r2_score
+from sklearn.model_selection import GridSearchCV
 from sklearn.pipeline import Pipeline
 
 from src.exception import CustomException
@@ -28,6 +30,7 @@ def evaluate_models(
     X_test: NDArray,
     y_test: NDArray,
     models: "dict[str, Pipeline]",
+    params: "dict[str, dict[str, Any]]",
 ) -> "dict[str, float]":
     try:
         report: dict[str, float] = {}
@@ -35,8 +38,14 @@ def evaluate_models(
         for i in range(len(list(models))):
             model = list(models.values())[i]
             model_name = list(models.keys())[i]
-            # Train model
-            model.fit(X_train, y_train)
+            param = list(params.values())[i]
+
+            # perform grid search
+            gs = GridSearchCV(model, param, n_jobs=-1, cv=3)
+            gs.fit(X_train, y_train)
+
+            # Best model
+            model = gs.best_estimator_
             # Make predictions
             y_test_pred = model.predict(X_test)
             # Evaluate Test dataset
