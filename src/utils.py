@@ -56,3 +56,11 @@ def evaluate_models(
         return report
     except Exception as e:
         raise CustomException(e, sys.exc_info())
+
+
+def load_object(file_path) -> Any:
+    try:
+        with open(file_path, "rb") as f:
+            return dill.load(f)
+    except Exception as e:
+        CustomException(e, sys.exc_info())
